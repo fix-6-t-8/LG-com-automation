@@ -20,13 +20,13 @@
       --border:   #2a2a42;
       --accent:   #aef33c;
       --accent2:  #7ab028;
-      --li:       #4a9eff;
-      --ig:       #ff6b9d;
-      --text:     #e0e0f0;
-      --muted:    #6868a0;
-      --danger:   #ff4a6b;
-      --ok:       #3cffc8;
-      --warn:     #ffaa3c;
+      --li:       #7db8ff;
+      --ig:       #ff8fb5;
+      --text:     #f0f0ff;
+      --muted:    #a0a0c8;
+      --danger:   #ff6b85;
+      --ok:       #5fffd8;
+      --warn:     #ffbb5c;
       --r:        8px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -149,7 +149,7 @@
       transition: border-color .2s;
     }
     #api-key-input:focus { border-color: var(--accent); }
-    .api-note { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+    .api-note { font-size: 0.78rem; color: #9090c0; margin-top: 8px; }
     .api-note a { color: var(--li); }
 
     /* ========================================
@@ -207,6 +207,7 @@
       transition: border-color .2s;
       width: 100%;
     }
+    input::placeholder, textarea::placeholder { color: #6060a0; }
     input:focus, select:focus, textarea:focus { border-color: var(--accent); }
     textarea { resize: vertical; min-height: 88px; }
 
@@ -400,10 +401,10 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 10px 12px;
-      color: var(--text);
+      color: #f0f0ff;
       font-family: 'DM Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.6;
+      font-size: 0.85rem;
+      line-height: 1.65;
       resize: vertical;
       min-height: 200px;
       outline: none;
@@ -418,7 +419,7 @@
       background: transparent;
       border: 1px solid var(--border);
       border-radius: var(--r);
-      color: var(--muted);
+      color: #b0b0d8;
       cursor: pointer;
       font-family: 'Barlow Condensed', sans-serif;
       font-weight: 700; font-size: 0.8rem;
@@ -459,7 +460,7 @@
     .export-tree {
       font-family: 'DM Mono', monospace;
       font-size: 0.72rem;
-      color: var(--muted);
+      color: #9090c0;
       line-height: 1.7;
       padding: 10px 14px;
       background: var(--bg2);

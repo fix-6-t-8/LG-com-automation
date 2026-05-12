@@ -621,6 +621,11 @@
     </div>
     <hr class="section-divider" />
     <div class="generate-area">
+      <div style="margin-bottom:20px">
+        <button class="btn-sm" id="btn-test-data" style="font-size:0.9rem;padding:9px 20px;border-color:var(--warn);color:var(--warn)">
+          🧪 Remplir avec des données de test
+        </button>
+      </div>
       <button class="btn-generate" id="btn-generate">
         <span>⚡</span>
         Générer les 8 posts
@@ -1115,6 +1120,133 @@ function init() {
   updateApiStatus();
   buildVisualsGrid();
 }
+
+/* ============================================================
+   DONNÉES DE TEST
+   Génère des images placeholder via canvas et remplit le formulaire
+   ============================================================ */
+
+// Génère une image placeholder colorée via canvas (retourne une data URL)
+function makePlaceholderImage(label, stepLabel, color) {
+  const canvas = document.createElement('canvas');
+  canvas.width  = 800;
+  canvas.height = 450;
+  const ctx = canvas.getContext('2d');
+
+  // Fond dégradé
+  const grad = ctx.createLinearGradient(0, 0, 800, 450);
+  grad.addColorStop(0, color);
+  grad.addColorStop(1, '#0d0d18');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 800, 450);
+
+  // Grille décorative
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < 800; x += 50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,450); ctx.stroke(); }
+  for (let y = 0; y < 450; y += 50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(800,y); ctx.stroke(); }
+
+  // Étiquette étape
+  ctx.fillStyle = 'rgba(174,243,60,0.9)';
+  ctx.font = 'bold 28px sans-serif';
+  ctx.fillText(stepLabel, 32, 54);
+
+  // Nom plateforme
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '18px sans-serif';
+  ctx.fillText(label.toUpperCase(), 32, 86);
+
+  // Titre central
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 48px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('ABYSSAL ECHO', 400, 210);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '22px sans-serif';
+  ctx.fillText('Visuel placeholder — ' + stepLabel + ' ' + label, 400, 260);
+
+  ctx.fillStyle = 'rgba(174,243,60,0.7)';
+  ctx.font = '16px sans-serif';
+  ctx.fillText('Neon Forge Studio × Loire Games', 400, 310);
+
+  return canvas.toDataURL('image/png');
+}
+
+function fillTestData() {
+  // — Champs texte —
+  document.getElementById('f-name').value    = 'Abyssal Echo';
+  document.getElementById('f-studio').value  = 'Neon Forge Studio';
+  document.getElementById('f-date').value    = '2025-09-15';
+  document.getElementById('f-genre').value   = 'Action-RPG';
+  document.getElementById('f-pitch').value   =
+    'Plongez dans les abysses d\'un monde submergé où chaque décision façonne votre destin. ' +
+    'Abyssal Echo mêle exploration sous-marine, combats viscéraux et narration émotionnelle.';
+  document.getElementById('f-link-steam').value   = 'https://store.steampowered.com/app/123456/Abyssal_Echo';
+  document.getElementById('f-link-site').value    = 'https://abyssalecho.neonforge.studio';
+  document.getElementById('f-link-trailer').value = 'https://youtube.com/watch?v=dQw4w9WgXcQ';
+  document.getElementById('f-hashtags').value     = '#AbyssalEcho #ActionRPG #SousLaMer';
+
+  // — Points forts —
+  const points = [
+    'Univers sous-marin 100 % inédit avec plus de 40h de contenu',
+    'Système de combat fluide et personnalisable inspiré des meilleurs action-RPG',
+    'Bande-son originale composée par l\'artiste électro Séléné Marais',
+    'Mode coopératif jusqu\'à 4 joueurs en ligne',
+    'Développé par un studio indépendant ligérien, Neon Forge Studio',
+  ];
+  document.querySelectorAll('.point-input').forEach((el, i) => { el.value = points[i] || ''; });
+
+  // — Plateformes —
+  document.querySelectorAll('#platforms-check input[type="checkbox"]').forEach(cb => {
+    cb.checked = ['PC', 'PlayStation 5'].includes(cb.value);
+  });
+
+  // — Tonalité —
+  document.querySelector('input[name="tone"][value="énergique"]').checked = true;
+
+  // — Images placeholder générées via canvas —
+  const palette = {
+    j_minus_15: '#1a2a4a',
+    j_minus_5:  '#2a1a4a',
+    j_minus_1:  '#3a1a2a',
+    j_day:      '#1a3a2a',
+  };
+
+  STEPS.forEach(step => {
+    ['linkedin', 'instagram'].forEach(platform => {
+      const color = palette[step.key];
+      const dataUrl = makePlaceholderImage(platform, step.label, color);
+      state.images[step.key][platform] = {
+        data: dataUrl,
+        name: `${step.folder}-${platform}.png`,
+        type: 'image/png',
+      };
+      // Mettre à jour la zone d'upload visuellement
+      const zones = document.querySelectorAll('.upload-zone');
+      // On repère la bonne zone via son ordre dans la grille
+      const stepIndex = STEPS.indexOf(step);
+      const platIndex = platform === 'linkedin' ? 0 : 1;
+      // +3 pour sauter les 3 cellules d'en-tête (vide + LI + IG)
+      const zoneIndex = stepIndex * 2 + platIndex + 3;
+      // Les upload-zones sont les enfants pairs de la grille (pas les vg-header)
+      const allZones = document.querySelectorAll('#visuals-grid .upload-zone');
+      const zone = allZones[stepIndex * 2 + platIndex];
+      if (zone) {
+        zone.classList.add('has-image');
+        zone.querySelector('.upload-preview').src = dataUrl;
+        zone.querySelector('.upload-filename').textContent = `${step.folder}-${platform}.png`;
+      }
+    });
+  });
+
+  // Feedback visuel
+  const btn = document.getElementById('btn-test-data');
+  btn.textContent = '✅ Données chargées !';
+  setTimeout(() => { btn.innerHTML = '🧪 Remplir avec des données de test'; }, 2500);
+}
+
+document.getElementById('btn-test-data').addEventListener('click', fillTestData);
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
